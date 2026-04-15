@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    user-select: none;
+}
+
+.pet {
+    width: 200px;
+    height: 200px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    cursor: grab;
+    z-index: 100;
+    left: 30%;
+    top: 30%;
+    transition: all 0.2s;
+}
+
+#status-panel {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    z-index: 999;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.bar-bg {
+    width: 120px;
+    height: 12px;
+    background: #eee;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #FF69B4;
+    transition: width 0.3s;
+}
+
+#energy-bar { background: #1E90FF; }
+
+.menu {
+    display: none;
+    position: fixed;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    padding: 6px 0;
+}
+
+.item {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.item:hover { background: #f5f5f5; }
+
+#clock-toast {
+    position: fixed;
+    background: white;
+    border: 2px solid #FF69B4;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    z-index: 99999;
+    display: none;
+}
