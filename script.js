@@ -18,11 +18,13 @@ pet.addEventListener('mousedown', e => {
     offY = e.clientY - pet.offsetTop;
     pet.style.cursor = 'grabbing';
 });
+
 document.addEventListener('mousemove', e => {
     if (!drag) return;
     pet.style.left = e.clientX - offX + 'px';
     pet.style.top = e.clientY - offY + 'px';
 });
+
 document.addEventListener('mouseup', () => {
     drag = false;
     pet.style.cursor = 'grab';
@@ -35,29 +37,63 @@ pet.addEventListener('contextmenu', e => {
     menu.style.left = e.clientX + 'px';
     menu.style.top = e.clientY + 'px';
 });
-document.addEventListener('click', () => menu.style.display = 'none');
 
-// 更新UI
-function updateUI() {
+document.addEventListener('click', () => {
+    menu.style.display = 'none';
+});
+
+// 更新数值UI
+function updateBarsOnly() {
     document.getElementById('happiness-bar').style.width = happiness + '%';
     document.getElementById('energy-bar').style.width = energy + '%';
     document.getElementById('happiness-text').innerText = happiness;
     document.getElementById('energy-text').innerText = energy;
+}
+
+// 更新整体UI
+function updateUI() {
+    updateBarsOnly();
     updateState();
 }
 
-// 状态动画（完全按原版逻辑）
+// 状态动画
 function updateState() {
-    if (isDead) { pet.className = 'pet crying'; return; }
-    if (happiness === 0 && energy === 0) { petDie(); return; }
-    if (happiness < 20 && energy < 20) { pet.className = 'pet angry'; return; }
-    if (happiness < 20) { pet.className = 'pet crying2'; return; }
-    if (energy < 20) { pet.className = 'pet crying'; return; }
-    if (energy < 40) { pet.className = 'pet hungry'; return; }
+    // 正在执行动作时，不要覆盖动作GIF
+    if (isAction) return;
+
+    if (isDead) {
+        pet.className = 'pet dead';
+        return;
+    }
+
+    if (happiness === 0 && energy === 0) {
+        petDie();
+        return;
+    }
+
+    if (happiness < 20 && energy < 20) {
+        pet.className = 'pet angry';
+        return;
+    }
+
+    if (happiness < 20) {
+        pet.className = 'pet crying2';
+        return;
+    }
+
+    if (energy < 20) {
+        pet.className = 'pet crying';
+        return;
+    }
+
+    if (energy < 40) {
+        pet.className = 'pet hungry';
+        return;
+    }
 
     const hour = new Date().getHours();
     const weekday = new Date().getDay();
-    const isWorkTime = weekday >= 1 && weekday <=5 && hour >=10 && hour <18;
+    const isWorkTime = weekday >= 1 && weekday <= 5 && hour >= 10 && hour < 18;
 
     if (isWorkTime) {
         pet.className = 'pet working2';
@@ -69,6 +105,7 @@ function updateState() {
 // 自动掉属性
 setInterval(() => {
     if (isDead || isAction) return;
+
     happiness = Math.max(0, happiness - 1);
     energy = Math.max(0, energy - 1);
     updateUI();
@@ -84,12 +121,16 @@ setInterval(() => {
 }, 1000);
 
 function showClock(h) {
+    if (isDead || isAction) return;
+
     isAction = true;
     pet.className = 'pet clock';
+
     clockToast.innerText = `现在是北京时间 ${h} 点整噢！`;
     clockToast.style.display = 'block';
     clockToast.style.left = pet.offsetLeft + 80 + 'px';
     clockToast.style.top = pet.offsetTop - 40 + 'px';
+
     setTimeout(() => {
         clockToast.style.display = 'none';
         isAction = false;
@@ -101,6 +142,7 @@ function showClock(h) {
 function petDie() {
     isDead = true;
     pet.className = 'pet dead';
+
     setTimeout(() => {
         isDead = false;
         happiness = 30;
@@ -117,27 +159,75 @@ function randomPos() {
     pet.style.top = Math.random() * h + 'px';
 }
 
-// ------------------------------
-// 所有互动功能（1:1 复刻原版）
-// ------------------------------
+// 通用动作函数
 function act(gif, hp, en, ms) {
+    if (isDead || isAction) return;
+
     isAction = true;
     pet.className = 'pet ' + gif;
+
     happiness = Math.min(100, Math.max(0, happiness + hp));
     energy = Math.min(100, Math.max(0, energy + en));
-    updateUI();
-    setTimeout(() => { isAction = false; updateUI(); }, ms);
+
+    // 只更新数值，不立刻触发状态覆盖
+    updateBarsOnly();
+
+    setTimeout(() => {
+        isAction = false;
+        updateUI();
+    }, ms);
 }
 
-function stick()    { act('stick', 15, -5, 60000); }
-function call()     { act('call', 0, 0, 2000); }
-function exercise() { act('exercise', 5, -15, 60000); }
-function charge()   { act('charge', 30, 30, 60000); }
-function cake()     { energy >= 80 ? act('full', 0, 0, 5000) : act('cake', 10, 5, 30000); }
-function baji()     { act('baji', 10, 0, 30000); }
-function baji2()    { act('baji2', 15, -10, 30000); }
-function appear()   { act('appear', 0, 0, 3500); randomPos(); }
-function walkDog()  { act('walkdog', 15, -10, 60000); }
+// 所有互动功能
+function stick() {
+    act('stick', 15, -5, 60000);
+}
+
+function call() {
+    act('call', 0, 0, 2000);
+}
+
+function exercise() {
+    act('exercise', 5, -15, 60000);
+}
+
+function charge() {
+    act('charge', 30, 30, 60000);
+}
+
+function cake() {
+    if (energy >= 80) {
+        act('full', 0, 0, 5000);
+    } else {
+        act('cake', 10, 5, 30000);
+    }
+}
+
+function baji() {
+    act('baji', 10, 0, 30000);
+}
+
+function baji2() {
+    act('baji2', 15, -10, 30000);
+}
+
+function appear() {
+    if (isDead || isAction) return;
+
+    isAction = true;
+    pet.className = 'pet appear';
+    randomPos();
+    updateBarsOnly();
+
+    setTimeout(() => {
+        isAction = false;
+        updateUI();
+    }, 3500);
+}
+
+function walkDog() {
+    act('walkdog', 15, -10, 60000);
+}
 
 function toggleStats() {
     statsVisible = !statsVisible;
