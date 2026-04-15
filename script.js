@@ -10,6 +10,8 @@ let isDead = false;
 let isAction = false;
 
 let drag = false, offX, offY;
+let actionTimer = null;
+let clockTimer = null;
 
 // 拖拽
 pet.addEventListener('mousedown', e => {
@@ -42,7 +44,7 @@ document.addEventListener('click', () => {
     menu.style.display = 'none';
 });
 
-// 更新数值UI
+// 只更新数值UI
 function updateBarsOnly() {
     document.getElementById('happiness-bar').style.width = happiness + '%';
     document.getElementById('energy-bar').style.width = energy + '%';
@@ -58,7 +60,6 @@ function updateUI() {
 
 // 状态动画
 function updateState() {
-    // 正在执行动作时，不要覆盖动作GIF
     if (isAction) return;
 
     if (isDead) {
@@ -91,20 +92,14 @@ function updateState() {
         return;
     }
 
-    const hour = new Date().getHours();
-    const weekday = new Date().getDay();
-    const isWorkTime = weekday >= 1 && weekday <= 5 && hour >= 10 && hour < 18;
-
-    if (isWorkTime) {
-        pet.className = 'pet working2';
-    } else {
-        pet.className = Math.random() > 0.5 ? 'pet normal' : 'pet normal2';
-    }
+    const states = ['normal', 'normal', 'normal2', 'normal2', 'working2'];
+    const randomState = states[Math.floor(Math.random() * states.length)];
+    pet.className = 'pet ' + randomState;
 }
 
 // 自动掉属性
 setInterval(() => {
-    if (isDead || isAction) return;
+    if (isDead) return;
 
     happiness = Math.max(0, happiness - 1);
     energy = Math.max(0, energy - 1);
@@ -115,25 +110,38 @@ setInterval(() => {
 setInterval(() => {
     const now = new Date();
     if (now.getMinutes() === 0 && now.getSeconds() === 0) {
-        const h = now.getHours();
-        showClock(h);
+        showClock(now.getHours());
     }
 }, 1000);
 
-function showClock(h) {
-    if (isDead || isAction) return;
+function clearCurrentAction() {
+    if (actionTimer) {
+        clearTimeout(actionTimer);
+        actionTimer = null;
+    }
+    if (clockTimer) {
+        clearTimeout(clockTimer);
+        clockTimer = null;
+    }
+    clockToast.style.display = 'none';
+}
 
+function showClock(h) {
+    if (isDead) return;
+
+    clearCurrentAction();
     isAction = true;
     pet.className = 'pet clock';
 
-    clockToast.innerText = `现在是北京时间 ${h} 点整噢！`;
+    clockToast.innerText = `现在是 ${h} 点整噢！`;
     clockToast.style.display = 'block';
     clockToast.style.left = pet.offsetLeft + 80 + 'px';
     clockToast.style.top = pet.offsetTop - 40 + 'px';
 
-    setTimeout(() => {
+    clockTimer = setTimeout(() => {
         clockToast.style.display = 'none';
         isAction = false;
+        clockTimer = null;
         updateUI();
     }, 9500);
 }
@@ -141,6 +149,7 @@ function showClock(h) {
 // 死亡
 function petDie() {
     isDead = true;
+    clearCurrentAction();
     pet.className = 'pet dead';
 
     setTimeout(() => {
@@ -161,26 +170,27 @@ function randomPos() {
 
 // 通用动作函数
 function act(gif, hp, en, ms) {
-    if (isDead || isAction) return;
+    if (isDead) return;
 
+    clearCurrentAction();
     isAction = true;
     pet.className = 'pet ' + gif;
 
     happiness = Math.min(100, Math.max(0, happiness + hp));
     energy = Math.min(100, Math.max(0, energy + en));
 
-    // 只更新数值，不立刻触发状态覆盖
     updateBarsOnly();
 
-    setTimeout(() => {
+    actionTimer = setTimeout(() => {
         isAction = false;
+        actionTimer = null;
         updateUI();
     }, ms);
 }
 
 // 所有互动功能
 function stick() {
-    act('stick', 15, -5, 60000);
+    act('stick', 15, -5, 6000);
 }
 
 function call() {
@@ -188,45 +198,47 @@ function call() {
 }
 
 function exercise() {
-    act('exercise', 5, -15, 60000);
+    act('exercise', 5, -15, 6000);
 }
 
 function charge() {
-    act('charge', 30, 30, 60000);
+    act('charge', 30, 30, 6000);
 }
 
 function cake() {
     if (energy >= 80) {
-        act('full', 0, 0, 5000);
+        act('full', 0, 0, 3000);
     } else {
-        act('cake', 10, 5, 30000);
+        act('cake', 10, 5, 4000);
     }
 }
 
 function baji() {
-    act('baji', 10, 0, 30000);
+    act('baji', 10, 0, 4000);
 }
 
 function baji2() {
-    act('baji2', 15, -10, 30000);
+    act('baji2', 15, -10, 4000);
 }
 
 function appear() {
-    if (isDead || isAction) return;
+    if (isDead) return;
 
+    clearCurrentAction();
     isAction = true;
     pet.className = 'pet appear';
     randomPos();
     updateBarsOnly();
 
-    setTimeout(() => {
+    actionTimer = setTimeout(() => {
         isAction = false;
+        actionTimer = null;
         updateUI();
     }, 3500);
 }
 
 function walkDog() {
-    act('walkdog', 15, -10, 60000);
+    act('walkdog', 15, -10, 6000);
 }
 
 function toggleStats() {
