@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #BFEFFF;
+    background: linear-gradient(to bottom, #87CEEB, #E0F7FF);
     user-select: none;
 }
 
