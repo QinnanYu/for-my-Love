@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>线条小狗宠物</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="pet" class="pet normal"></div>
+
+    <div id="status-bar">
+        能量: <span id="energy">100</span> | 幸福: <span id="happiness">100</span>
+    </div>
+
+    <div id="context-menu" class="menu">
+        <div class="menu-item" onclick="feed()">🍖 喂食</div>
+        <div class="menu-item" onclick="charge()">🔋 充电</div>
+        <div class="menu-item" onclick="play()">⚽ 玩耍</div>
+        <div class="menu-item" onclick="toggleStatus()">📊 状态显示开关</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
