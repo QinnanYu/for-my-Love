@@ -20,6 +20,29 @@ body {
     transition: all 0.2s;
 }
 
+/* 这里的路径已经全部改成 GIF/xxx.gif，和你的仓库结构完全匹配 */
+.pet.normal     { background-image: url('GIF/normal.gif'); }
+.pet.normal2    { background-image: url('GIF/normal2.gif'); }
+.pet.working    { background-image: url('GIF/working.gif'); }
+.pet.working2   { background-image: url('GIF/working2.gif'); }
+.pet.hungry     { background-image: url('GIF/hungry.gif'); }
+.pet.angry      { background-image: url('GIF/angry.gif'); }
+.pet.crying     { background-image: url('GIF/crying.gif'); }
+.pet.crying2    { background-image: url('GIF/crying2.gif'); }
+.pet.stick      { background-image: url('GIF/stick.gif'); }
+.pet.call       { background-image: url('GIF/call.gif'); }
+.pet.exercise   { background-image: url('GIF/exercise.gif'); }
+.pet.charge     { background-image: url('GIF/charge.gif'); }
+.pet.cake       { background-image: url('GIF/cake.gif'); }
+.pet.full       { background-image: url('GIF/full.gif'); }
+.pet.baji       { background-image: url('GIF/baji.gif'); }
+.pet.baji2      { background-image: url('GIF/baji2.gif'); }
+.pet.appear     { background-image: url('GIF/appear.gif'); }
+.pet.walkdog    { background-image: url('GIF/walkdog.gif'); }
+.pet.clock      { background-image: url('GIF/clock.gif'); }
+.pet.boring     { background-image: url('GIF/boring.gif'); }
+.pet.dead       { background-image: url('GIF/crying.gif'); }
+
 #status-panel {
     position: fixed;
     top: 10px;
